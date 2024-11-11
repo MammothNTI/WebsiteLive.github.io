@@ -1,61 +1,43 @@
-// Create KVdb instance with your bucket ID
+// KVdb configuration
 const kvdbStorage = KVdb.bucket('XFgePpjYajjjKfuFWSMmAi').localStorage();
 
+// State for toggling between Login and Signup forms
 let isLogin = false;
 
-// Function to toggle between login and signup forms
 function toggleForm() {
     isLogin = !isLogin;
     document.getElementById('form-title').textContent = isLogin ? 'Login' : 'Signup';
-    document.getElementById('toggle-link').textContent = isLogin 
-        ? "Don't have an account? Signup here" 
+    document.getElementById('toggle-link').textContent = isLogin
+        ? "Don't have an account? Signup here"
         : "Already have an account? Login here";
     document.getElementById('message').textContent = '';
 }
 
 // Function to handle login or signup
-function handleAuth() {
+async function handleAuth() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
+    const storedUser = await kvdbStorage.getItem(username);
 
     if (isLogin) {
-        // Login
-        kvdbStorage.getItem(username)
-            .then(storedUser => {
-                if (storedUser && storedUser.password === password) {
-                    document.getElementById('message').textContent = 'Login successful!';
-                    document.getElementById('message').style.color = 'green';
-                } else {
-                    document.getElementById('message').textContent = 'Invalid username or password';
-                    document.getElementById('message').style.color = 'red';
-                }
-            })
-            .catch(err => {
-                document.getElementById('message').textContent = 'Error during login';
-                document.getElementById('message').style.color = 'red';
-            });
+        // Handle login
+        if (storedUser && storedUser.password === password) {
+            document.getElementById('message').textContent = 'Login successful!';
+            document.getElementById('message').style.color = 'green';
+        } else {
+            document.getElementById('message').textContent = 'Invalid username or password';
+            document.getElementById('message').style.color = 'red';
+        }
     } else {
-        // Signup
-        kvdbStorage.getItem(username)
-            .then(storedUser => {
-                if (storedUser) {
-                    document.getElementById('message').textContent = 'Username already exists';
-                    document.getElementById('message').style.color = 'red';
-                } else {
-                    kvdbStorage.setItem(username, { password })
-                        .then(() => {
-                            document.getElementById('message').textContent = 'Signup successful!';
-                            document.getElementById('message').style.color = 'green';
-                        })
-                        .catch(err => {
-                            document.getElementById('message').textContent = 'Error during signup';
-                            document.getElementById('message').style.color = 'red';
-                        });
-                }
-            })
-            .catch(err => {
-                document.getElementById('message').textContent = 'Error checking username';
-                document.getElementById('message').style.color = 'red';
-            });
+        // Handle signup
+        if (storedUser) {
+            document.getElementById('message').textContent = 'Username already exists';
+            document.getElementById('message').style.color = 'red';
+        } else {
+            // Store new user in KVdb
+            await kvdbStorage.setItem(username, { password });
+            document.getElementById('message').textContent = 'Signup successful!';
+            document.getElementById('message').style.color = 'green';
+        }
     }
 }
