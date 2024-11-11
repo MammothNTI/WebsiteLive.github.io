@@ -17,12 +17,12 @@
         const kvdbStorage = KVdb.bucket('FGjVaM1H4r2HsSxvdzbuHA').localStorage();
 
         // Set item to KVdb
-        kvdbStorage.setItem('my-key', 'my-kvalue')
+        kvdbStorage.setItem('mohammed', 'my-kvalue')
             .then(() => {
                 console.log('Key saved successfully');
                 
                 // Get item from KVdb
-                return kvdbStorage.getItem('my-key');
+                return kvdbStorage.getItem('mohammed');
             })
             .then(value => {
                 console.log('Got value:', value);
