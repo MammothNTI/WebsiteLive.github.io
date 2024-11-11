@@ -17,15 +17,19 @@
         const kvdbStorage = KVdb.bucket('FGjVaM1H4r2HsSxvdzbuHA').localStorage();
 
         // Set item to KVdb
-        kvdbStorage.setItem('mohammed', 'my-kvalue')
+        kvdbStorage.setItem('my-key', 'my-kvalue')
             .then(() => {
                 console.log('Key saved successfully');
                 
-                // Get item from KVdb
+                // Now try to get the value stored with the key 'mohammed'
                 return kvdbStorage.getItem('mohammed');
             })
             .then(value => {
-                console.log('Got value:', value);
+                if (value !== null) {
+                    console.log('Got value for "mohammed":', value); // Expected output: '1234'
+                } else {
+                    console.log('No value found for "mohammed".');
+                }
             })
             .catch(err => {
                 console.error('Error:', err);
